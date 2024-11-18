@@ -2,10 +2,9 @@ public class SensorDataProcessor {
 // Senson data and limits.
 public double[][][] data;
 public double[][] limit;
-// constructor
-public SensorDataProcessor(double[][][] data, double[][] limit) {//change the name (toleen)
-this.data = data;
-this.limit = limit;
+//no validation of inputs(Naila)
+if (sensorData == null || thresholds == null) {
+    throw new IllegalArgumentException("Data or thresholds cannot be null.");
 }
 // calculates average of sensor data
 private double average(double[] array) {
