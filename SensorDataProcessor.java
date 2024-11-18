@@ -13,15 +13,14 @@ public double[][] limit;
         this.data = sensorData;
         this.limit = thresholds;
     }
-// calculates average of sensor data
-private double average(double[] array) {
-int i = 0;
-double val = 0;
-for (i = 0; i < array.length; i++) {
-val += array[i];
-}
-return val / array.length;
-}
+// Calculate the average (no change here, as it’s simple and efficient)(toleen)
+    private double average(double[] array) {
+        double sum = 0;
+        for (double val : array) {
+            sum += val;
+        }
+        return sum / array.length;
+    }ٍ
 // calculate data
 public void calculate(double d) {
 int i, j, k = 0;
