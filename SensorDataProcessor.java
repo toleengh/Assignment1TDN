@@ -3,7 +3,7 @@ public class SensorDataProcessor {
 public double[][][] data;
 public double[][] limit;
 // constructor
-public DataProcessor(double[][][] data, double[][] limit) {
+public SensorDataProcessor(double[][][] data, double[][] limit) {//change the name (toleen)
 this.data = data;
 this.limit = limit;
 }
@@ -32,11 +32,11 @@ for (k = 0; k < data[0][0].length; k++) {
     double limitSquared = Math.pow(limit[i][j], 2.0);
     data2[i][j][k] = data[i][j][k] / d - limitSquared;
 
-    // Precompute the average once and reuse
+    // Precompute the average once and reuse(toleen)
     double avgData2 = average(data2[i][j]);
     double avgData = average(data[i][j]);
 
-    // Apply conditions with short-circuit evaluation
+    // Apply conditions with short-circuit evaluation(toleen)
     if (avgData2 > 10 && avgData2 < 50) {
         break;
     } else if (Math.max(data[i][j][k], data2[i][j][k]) > data[i][j][k]) {
