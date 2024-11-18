@@ -23,45 +23,56 @@ public double[][] limit;
     }ٍ
 // calculate data
 public void calculate(double d) {
-int i, j, k = 0;
-double[][][] data2 = new
-double[data.length][data[0].length][data[0][0].length];
-BufferedWriter out;
-// Write racing stats data into a file
-try {
-out = new BufferedWriter(new FileWriter("RacingStatsData.txt"));
-for (i = 0; i < data.length; i++) {
-for (j = 0; j < data[0].length; j++) {
-for (k = 0; k < data[0][0].length; k++) {
-    // Precompute the squared limit to avoid recalculating(toleen)
-    double limitSquared = Math.pow(limit[i][j], 2.0);
-    data2[i][j][k] = data[i][j][k] / d - limitSquared;
+        if (d == 0) {
+            throw new IllegalArgumentException("Divisor 'd' cannot be zero.");
+        }
 
-    // Precompute the average once and reuse(toleen)
-    double avgData2 = average(data2[i][j]);
-    double avgData = average(data[i][j]);
+        // Precompute and cache results (toleen)
+        double[][][] data2 = new double[data.length][data[0].length][data[0][0].length];
+        Map<String, Double> averageCache = new HashMap<>();
 
-    // Apply conditions with short-circuit evaluation(toleen)
-    if (avgData2 > 10 && avgData2 < 50) {
-        break;
-    } else if (Math.max(data[i][j][k], data2[i][j][k]) > data[i][j][k]) {
-        break;
-    } else if (Math.pow(Math.abs(data[i][j][k]), 3) < Math.pow(Math.abs(data2[i][j][k]), 3)
-            && avgData < data2[i][j][k] && (i + 1) * (j + 1) > 0) {
-        data2[i][j][k] *= 2;
+        try (BufferedWriter out = new BufferedWriter(new FileWriter("RacingStatsData.txt"))) {
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < data.length; i++) {
+                for (int j = 0; j < data[i].length; j++) {
+                    double limitSquared = limit[i][j] * limit[i][j]; // Strength reduction: Replace pow with multiplication(toleen)
+
+                    // Cache averages for efficiency (toleen)
+                    String keyData = i + "-" + j + "-data";
+                    String keyData2 = i + "-" + j + "-data2";
+
+                    double avgData = averageCache.computeIfAbsent(keyData, k -> average(data[i][j]));
+
+                    for (int k = 0; k < data[i][j].length; k++) {
+                        // Precompute data2 transformation (toleen)
+                        data2[i][j][k] = data[i][j][k] / d - limitSquared;
+
+                        // Compute or fetch the average for data2
+                        double avgData2 = averageCache.computeIfAbsent(keyData2, k -> average(data2[i][j]));
+
+                        // Apply conditions (short-circuit logic - toleen)
+                        if (avgData2 > 10 && avgData2 < 50) {
+                            break;
+                        } else if (Math.max(data[i][j][k], data2[i][j][k]) > data[i][j][k]) {
+                            break;
+                        } else if (Math.abs(data[i][j][k]) * Math.abs(data[i][j][k]) * Math.abs(data[i][j][k]) <
+                                   Math.abs(data2[i][j][k]) * Math.abs(data2[i][j][k]) * Math.abs(data2[i][j][k])
+                                   && avgData < data2[i][j][k] && (i + 1) * (j + 1) > 0) {
+                            data2[i][j][k] *= 2;
+                        }
+                    }
+
+                    // Append results to the buffer(Dana)
+                    sb.append(Arrays.toString(data2[i][j])).append("\t");
+                }
+                sb.append("\n");
+            }
+
+            // Write results in bulk
+            out.write(sb.toString());
+        } catch (IOException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
+        }
     }
-}
-
-}
-}
-for (i = 0; i < data2.length; i++) {
-for (j = 0; j < data2[0].length; j++) {
-out.write(data2[i][j] + "\t");
-}
-}
-out.close();
-} catch (Exception e) {
-System.out.println("Error= " + e);
-}
-}
 }
