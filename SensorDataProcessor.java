@@ -28,22 +28,25 @@ out = new BufferedWriter(new FileWriter("RacingStatsData.txt"));
 for (i = 0; i < data.length; i++) {
 for (j = 0; j < data[0].length; j++) {
 for (k = 0; k < data[0][0].length; k++) {
-data2[i][j][k] = data[i][j][k] / d -
-Math.pow(limit[i][j], 2.0);
-if (average(data2[i][j]) > 10 && average(data2[i][j])
-< 50)
-break;
-else if (Math.max(data[i][j][k], data2[i][j][k]) >
-data[i][j][k])
-break;
-else if (Math.pow(Math.abs(data[i][j][k]), 3) <
-Math.pow(Math.abs(data2[i][j][k]), 3)
-&& average(data[i][j]) < data2[i][j][k] && (i + 1)
-* (j + 1) > 0)
-data2[i][j][k] *= 2;
-else
-continue;
+    // Precompute the squared limit to avoid recalculating(toleen)gi
+    double limitSquared = Math.pow(limit[i][j], 2.0);
+    data2[i][j][k] = data[i][j][k] / d - limitSquared;
+
+    // Precompute the average once and reuse
+    double avgData2 = average(data2[i][j]);
+    double avgData = average(data[i][j]);
+
+    // Apply conditions with short-circuit evaluation
+    if (avgData2 > 10 && avgData2 < 50) {
+        break;
+    } else if (Math.max(data[i][j][k], data2[i][j][k]) > data[i][j][k]) {
+        break;
+    } else if (Math.pow(Math.abs(data[i][j][k]), 3) < Math.pow(Math.abs(data2[i][j][k]), 3)
+            && avgData < data2[i][j][k] && (i + 1) * (j + 1) > 0) {
+        data2[i][j][k] *= 2;
+    }
 }
+
 }
 }
 for (i = 0; i < data2.length; i++) {
